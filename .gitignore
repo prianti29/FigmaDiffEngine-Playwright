@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Test results
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Screenshots and diff images
+screenshots/
+diff/
+*.png
+*.jpg
+*.jpeg
+
+# Baseline images (uncomment if you don't want to track them)
+# baseline/
+
+# Reports
+reports/
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
