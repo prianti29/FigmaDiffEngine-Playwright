@@ -9,7 +9,9 @@
     "test:headed": "playwright test --headed",
     "test:debug": "playwright test --debug",
     "test:visual": "playwright test tests/e2e/visual-comparison.spec.js",
-    "report": "playwright show-report"
+    "report": "playwright show-report",
+    "generate:placeholders": "node utils/generate-placeholder-images.js",
+    "capture:baseline": "node utils/capture-baseline-images.js"
   },
   "keywords": ["playwright", "visual-testing", "figma", "ui-automation"],
   "author": "",

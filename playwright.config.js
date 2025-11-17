@@ -37,13 +37,19 @@ export default defineConfig({
     
     /* Video settings */
     video: 'retain-on-failure',
+    
+    /* Navigation timeout - increased for slow-loading pages */
+    navigationTimeout: 60000, // 60 seconds
   },
   
   /* Expect settings for visual comparisons */
   expect: {
     /* Maximum time expect() should wait for the condition to be met. */
-    timeout: 5000,
+    timeout: 10000, // Increased to 10 seconds
   },
+  
+  /* Global test timeout */
+  timeout: 60000, // 60 seconds per test
 
   /* Configure projects for major browsers */
   projects: [

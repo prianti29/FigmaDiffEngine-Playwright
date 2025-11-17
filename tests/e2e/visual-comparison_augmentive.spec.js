@@ -4,7 +4,7 @@ import { FigmaHelper } from '../../utils/figma-helper.js';
 import path from 'path';
 import fs from 'fs';
 
-const WEBSITE_URL = 'https://thebestcamo-dev.myshopify.com/pages/contact';
+const WEBSITE_URL = 'https://augmentive.health/login';
 
 test.describe('Visual Comparison: Figma vs Webpage', () => {
   let imageComparison;
@@ -37,7 +37,7 @@ test.describe('Visual Comparison: Figma vs Webpage', () => {
     await page.waitForTimeout(2000);
 
     // Take screenshot of the page
-    const screenshotPath = './screenshots/theBestCamo/contactPage-actual.png';
+    const screenshotPath = './screenshots/loginPage-actual.png';
     await page.screenshot({
       path: screenshotPath,
       fullPage: true
@@ -45,18 +45,18 @@ test.describe('Visual Comparison: Figma vs Webpage', () => {
 
     // Get Figma baseline image path from loginPage folder
     // Note: getBaselinePath() already adds './baseline' prefix, so just pass the relative path
-    const figmaImagePath = figmaHelper.getBaselinePath('thebestcamo-contact-us/Contact.png');
+    const figmaImagePath = figmaHelper.getBaselinePath('loginPage/1920.png');
 
     // Check if baseline exists
-    if (!figmaHelper.baselineExists('thebestcamo-contact-us/Contact.png')) {
-      test.skip('Figma baseline image not found. Please add thebestcamo-contact-us/Contact.png to ./baseline folder');
+    if (!figmaHelper.baselineExists('loginPage/1920.png')) {
+      test.skip('Figma baseline image not found. Please add loginPage/1920.png to ./baseline folder');
     }
 
     // Compare images
     const result = await imageComparison.compareImages(
       figmaImagePath,
       screenshotPath,
-      'theBestCamo/contactPage-diff'
+      'loginPage-diff'
     );
 
     // Log comparison results
@@ -116,8 +116,10 @@ test.describe('Visual Comparison: Figma vs Webpage', () => {
   test('Compare multiple viewports', async ({ page }) => {
     // Map viewport widths to your Figma images in loginPage folder
     const viewports = [
-      { name: 'desktop-1920', width: 1920, height: 1080, figmaImage: 'thebestcamo-contact-us/Contact.png' },
-
+      { name: 'desktop-1920', width: 1920, height: 1080, figmaImage: 'loginPage/1920.png' },
+      { name: 'desktop-1440', width: 1440, height: 900, figmaImage: 'loginPage/1440.png' },
+      { name: 'tablet-1024', width: 1024, height: 768, figmaImage: 'loginPage/1024.png' },
+      { name: 'tablet-768', width: 768, height: 1024, figmaImage: 'loginPage/768.png' }
     ];
 
     for (const viewport of viewports) {
@@ -136,7 +138,7 @@ test.describe('Visual Comparison: Figma vs Webpage', () => {
       await page.waitForTimeout(2000);
 
       // Take screenshot
-      const screenshotPath = `./screenshots/theBestCamo/contactPage-${viewport.name}.png`;
+      const screenshotPath = `./screenshots/loginPage-${viewport.name}.png`;
       await page.screenshot({ path: screenshotPath, fullPage: true });
 
       // Get corresponding Figma baseline from loginPage folder
@@ -151,7 +153,7 @@ test.describe('Visual Comparison: Figma vs Webpage', () => {
       const result = await imageComparison.compareImages(
         figmaImagePath,
         screenshotPath,
-        `theBestCamo/contactPage-${viewport.name}-diff`
+        `loginPage-${viewport.name}-diff`
       );
 
       console.log(`${viewport.name} (${viewport.width}x${viewport.height}) - Difference: ${result.diffPercentage}%`);

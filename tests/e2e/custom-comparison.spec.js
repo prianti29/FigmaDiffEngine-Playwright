@@ -1,29 +1,45 @@
 import { test, expect } from '@playwright/test';
 import { ImageComparison } from '../../utils/image-comparison.js';
+import { FigmaHelper } from '../../utils/figma-helper.js';
 import path from 'path';
 
 /**
  * Example test showing how to compare any two images
  * This is useful for comparing Figma designs with webpage screenshots
  */
+
+// ⚙️ CONFIGURATION: Change this to your website URL
+const WEBSITE_URL = 'https://augmentive.health/login';
+
 test.describe('Custom Image Comparison', () => {
-  test('Compare two custom images', async ({ page }) => {
-    const imageComparison = new ImageComparison({
+  let imageComparison;
+  let figmaHelper;
+
+  test.beforeEach(() => {
+    imageComparison = new ImageComparison({
       threshold: 0.15, // 15% difference threshold
       outputDir: './diff'
     });
+    figmaHelper = new FigmaHelper('./baseline');
+  });
 
+  test('Compare two custom images', async ({ page }) => {
     // Path to your Figma design image
-    const figmaImagePath = './baseline/my-design-figma.png';
-    
+    const figmaImagePath = figmaHelper.getBaselinePath('my-design-figma.png');
+
+    // Check if baseline exists
+    if (!figmaHelper.baselineExists('my-design-figma.png')) {
+      test.skip('Figma baseline image not found. Please add my-design-figma.png to ./baseline folder');
+    }
+
     // Navigate and take screenshot
-    await page.goto('https://example.com');
+    await page.goto(WEBSITE_URL);
     await page.waitForLoadState('networkidle');
-    
+
     const webpageImagePath = './screenshots/my-page-actual.png';
-    await page.screenshot({ 
+    await page.screenshot({
       path: webpageImagePath,
-      fullPage: true 
+      fullPage: true
     });
 
     // Compare the images
@@ -64,11 +80,16 @@ test.describe('Custom Image Comparison', () => {
       outputDir: './diff'
     });
 
-    const figmaImagePath = './baseline/critical-component-figma.png';
-    
-    await page.goto('https://example.com');
+    const figmaImagePath = figmaHelper.getBaselinePath('critical-component-figma.png');
+
+    // Check if baseline exists
+    if (!figmaHelper.baselineExists('critical-component-figma.png')) {
+      test.skip('Figma baseline image not found. Please add critical-component-figma.png to ./baseline folder');
+    }
+
+    await page.goto(WEBSITE_URL);
     await page.waitForSelector('.critical-component'); // Wait for specific component
-    
+
     const webpageImagePath = './screenshots/critical-component-actual.png';
     await page.locator('.critical-component').screenshot({ path: webpageImagePath });
 
@@ -79,9 +100,9 @@ test.describe('Custom Image Comparison', () => {
     );
 
     console.log(`Critical Component Difference: ${result.diffPercentage}%`);
-    
+
     // Stricter assertion for critical components
-    expect(result.diffPercentage, 
+    expect(result.diffPercentage,
       `Critical component has ${result.diffPercentage}% difference, which exceeds the strict threshold of 5%`
     ).toBeLessThanOrEqual(5);
   });

@@ -8,11 +8,11 @@ playwright-report/
 playwright/.cache/
 
 # Screenshots and diff images
-screenshots/
-diff/
-*.png
-*.jpg
-*.jpeg
+# screenshots/
+# diff/
+# *.png
+# *.jpg
+# *.jpeg
 
 # Baseline images (uncomment if you don't want to track them)
 # baseline/
