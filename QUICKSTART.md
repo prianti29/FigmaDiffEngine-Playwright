@@ -37,20 +37,43 @@ npm run test:visual
 3. Use the comparison utility:
 
 ```javascript
-import { ImageComparison } from './utils/image-comparison.js';
+import { ImageComparison } from "./utils/image-comparison.js";
+import { FigmaHelper } from "./utils/figma-helper.js";
 
 const imageComparison = new ImageComparison({
   threshold: 0.1,
-  outputDir: './diff'
+  outputDir: "./diff",
 });
 
+const figmaHelper = new FigmaHelper("./baseline");
+
 const result = await imageComparison.compareImages(
-  './baseline/my-design-figma.png',
-  './screenshots/my-page-actual.png',
-  'my-comparison'
+  figmaHelper.getBaselinePath("my-design-figma.png"),
+  "./screenshots/my-page-actual.png",
+  "my-comparison"
 );
 
 console.log(`Difference: ${result.diffPercentage}%`);
+```
+
+### Option C: Password-Protected Sites
+
+For password-protected sites (e.g., Shopify stores):
+
+```javascript
+import { AuthHelper } from "./utils/auth-helper.js";
+
+// Authenticate first
+await AuthHelper.authenticateShopifyStore(
+  page,
+  "https://store.myshopify.com/password",
+  "your-password"
+);
+
+// Then navigate and take screenshot
+await page.goto("https://store.myshopify.com/pages/contact", {
+  waitUntil: "networkidle",
+});
 ```
 
 ## Step 4: View Results
@@ -73,21 +96,32 @@ After running tests, check:
 
 - Use descriptive names for baseline images (e.g., `homepage-desktop-figma.png`)
 - Match viewport sizes between Figma and webpage screenshots
-- Adjust threshold based on component criticality (0.05 for critical, 0.1 for standard)
+- Adjust threshold based on component criticality:
+  - 0.05 (5%) for critical components
+  - 0.1 (10%) for standard UI elements
+  - 0.12 (12%) for full-page comparisons (recommended)
+  - 0.15 (15%) for complex layouts
 - Always review diff images to understand what changed
+- Wait for `networkidle` before taking screenshots to ensure page is fully loaded
+- Use `AuthHelper` for password-protected sites
 
 ## Troubleshooting
 
 **"Baseline image not found"**
+
 - Check file name matches exactly (case-sensitive)
 - Ensure image is in `baseline/` folder
 
 **"High difference percentage"**
+
 - Verify viewport sizes match
-- Wait for page to fully load before screenshot
+- Wait for page to fully load before screenshot (use `waitUntil: 'networkidle'`)
+- Wait for images to load completely
 - Check for dynamic content (ads, timestamps, etc.)
+- Consider using 12% threshold for full-page comparisons
+- Review diff images to identify specific problem areas
 
 **"Images not aligning"**
+
 - Ensure both images have similar dimensions
 - The tool auto-resizes, but matching dimensions work best
-

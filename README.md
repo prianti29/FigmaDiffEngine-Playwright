@@ -27,7 +27,8 @@ A Playwright automation project for comparing Figma design images with webpage s
 │   └── api/             # API tests (if needed)
 ├── utils/
 │   ├── image-comparison.js  # Image comparison utilities
-│   └── figma-helper.js      # Figma baseline helpers
+│   ├── figma-helper.js      # Figma baseline helpers
+│   └── auth-helper.js       # Authentication helpers (password-protected sites)
 ├── pages/               # Page Object Model (if needed)
 ├── fixtures/            # Test fixtures
 └── playwright.config.js # Playwright configuration
@@ -36,11 +37,13 @@ A Playwright automation project for comparing Figma design images with webpage s
 ## Installation
 
 1. Install dependencies:
+
 ```bash
 npm install
 ```
 
 2. Install Playwright browsers:
+
 ```bash
 npx playwright install
 ```
@@ -50,6 +53,7 @@ npx playwright install
 ### 1. Prepare Figma Baseline Images
 
 Place your Figma design images in the `baseline/` folder:
+
 - `homepage-figma.png`
 - `header-figma.png`
 - `homepage-desktop-figma.png`
@@ -90,34 +94,82 @@ npm run report
 
 ## Example Test
 
-```javascript
-import { test, expect } from '@playwright/test';
-import { ImageComparison } from '../../utils/image-comparison.js';
-import { FigmaHelper } from '../../utils/figma-helper.js';
+### Basic Example
 
-test('Compare homepage with Figma design', async ({ page }) => {
+```javascript
+import { test, expect } from "@playwright/test";
+import { ImageComparison } from "../../utils/image-comparison.js";
+import { FigmaHelper } from "../../utils/figma-helper.js";
+
+test("Compare homepage with Figma design", async ({ page }) => {
   const imageComparison = new ImageComparison({
     threshold: 0.1, // 10% difference threshold
-    outputDir: './diff'
+    outputDir: "./diff",
   });
-  
-  const figmaHelper = new FigmaHelper('./baseline');
-  
+
+  const figmaHelper = new FigmaHelper("./baseline");
+
   // Navigate to webpage
-  await page.goto('https://example.com');
-  
+  await page.goto("https://example.com");
+
   // Take screenshot
-  const screenshotPath = './screenshots/homepage-actual.png';
+  const screenshotPath = "./screenshots/homepage-actual.png";
   await page.screenshot({ path: screenshotPath, fullPage: true });
-  
+
   // Compare with Figma design
   const result = await imageComparison.compareImages(
-    figmaHelper.getBaselinePath('homepage-figma.png'),
+    figmaHelper.getBaselinePath("homepage-figma.png"),
     screenshotPath,
-    'homepage-diff'
+    "homepage-diff"
   );
-  
+
   // Assert difference is within threshold
+  expect(result.passed).toBeTruthy();
+});
+```
+
+### Example with Password-Protected Site (Shopify)
+
+```javascript
+import { test, expect } from "@playwright/test";
+import { ImageComparison } from "../../utils/image-comparison.js";
+import { FigmaHelper } from "../../utils/figma-helper.js";
+import { AuthHelper } from "../../utils/auth-helper.js";
+
+test("Compare password-protected Shopify store", async ({ page }) => {
+  const imageComparison = new ImageComparison({
+    threshold: 0.12, // 12% threshold for full-page comparisons
+    outputDir: "./diff",
+  });
+
+  const figmaHelper = new FigmaHelper("./baseline");
+
+  // Authenticate with password-protected store
+  await AuthHelper.authenticateShopifyStore(
+    page,
+    "https://store.myshopify.com/password",
+    "your-password"
+  );
+
+  // Navigate to target page
+  await page.goto("https://store.myshopify.com/pages/contact", {
+    waitUntil: "networkidle",
+  });
+
+  // Wait for page to be fully loaded
+  await page.waitForLoadState("networkidle");
+
+  // Take screenshot
+  const screenshotPath = "./screenshots/contactPage-actual.png";
+  await page.screenshot({ path: screenshotPath, fullPage: true });
+
+  // Compare with Figma design
+  const result = await imageComparison.compareImages(
+    figmaHelper.getBaselinePath("contact-page-figma.png"),
+    screenshotPath,
+    "contactPage-diff"
+  );
+
   expect(result.passed).toBeTruthy();
 });
 ```
@@ -128,8 +180,8 @@ test('Compare homepage with Figma design', async ({ page }) => {
 
 ```javascript
 const imageComparison = new ImageComparison({
-  threshold: 0.1,        // 10% difference threshold (0.0 - 1.0)
-  outputDir: './diff'    // Directory for diff images
+  threshold: 0.1, // 10% difference threshold (0.0 - 1.0)
+  outputDir: "./diff", // Directory for diff images
 });
 ```
 
@@ -137,6 +189,7 @@ const imageComparison = new ImageComparison({
 
 - **0.05 (5%)**: Very strict - for critical components
 - **0.1 (10%)**: Standard - for most UI elements
+- **0.12 (12%)**: Recommended for full-page comparisons
 - **0.15 (15%)**: Lenient - for complex layouts
 
 ## Output Files
@@ -150,6 +203,7 @@ After running tests, you'll find:
 ## Comparison Metrics
 
 Each comparison returns:
+
 - `diffPercentage`: Percentage of different pixels
 - `diffPixels`: Number of different pixels
 - `totalPixels`: Total pixels in image
@@ -161,29 +215,41 @@ Each comparison returns:
 ## Best Practices
 
 1. **Organize Baselines**: Use descriptive names for Figma images
-2. **Set Appropriate Thresholds**: Stricter for critical components
+2. **Set Appropriate Thresholds**:
+   - 5% for critical components
+   - 10% for standard UI elements
+   - 12% for full-page comparisons
+   - 15% for complex layouts
 3. **Update Baselines**: When designs change, update baseline images
 4. **Review Diff Images**: Always check diff images for false positives
-5. **Version Control**: Consider tracking baseline images in git
+5. **Wait for Page Stability**: Use `networkidle` and wait for key elements before screenshots
+6. **Handle Authentication**: Use `AuthHelper` for password-protected sites
+7. **Version Control**: Consider tracking baseline images in git
 
 ## Troubleshooting
 
 ### Baseline image not found
+
 - Ensure Figma images are in the `baseline/` folder
 - Check file names match exactly (case-sensitive)
 
 ### High difference percentage
+
 - Check if viewport sizes match
-- Verify page is fully loaded before screenshot
-- Consider adjusting threshold for complex layouts
+- Verify page is fully loaded before screenshot (use `networkidle` wait strategy)
+- Wait for images and dynamic content to load
+- Consider adjusting threshold for complex layouts (12% recommended for full-page)
+- Review diff images to identify specific differences
 
 ### Images not aligning
+
 - Ensure both images have similar dimensions
 - The tool automatically resizes, but matching dimensions work best
 
 ## Contributing
 
 Feel free to extend this project with:
+
 - Additional comparison algorithms
 - CI/CD integration
 - Visual regression testing workflows
@@ -192,4 +258,3 @@ Feel free to extend this project with:
 ## License
 
 ISC
-
