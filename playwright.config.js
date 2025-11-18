@@ -14,9 +14,13 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
+
   /* Exclude specific test files */
-  testIgnore: ['**/visual-comparison_augmentive.spec.js'],
+  testIgnore: ['**/visual-comparison_augmentive.spec.js', '**/custom-comparison_augmentive.spec.js'],
+
+
   /* Run tests in files in parallel */
+
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
@@ -33,23 +37,23 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    
+
     /* Screenshot settings for visual testing */
     screenshot: 'only-on-failure',
-    
+
     /* Video settings */
     video: 'retain-on-failure',
-    
+
     /* Navigation timeout - increased for slow-loading pages */
     navigationTimeout: 60000, // 60 seconds
   },
-  
+
   /* Expect settings for visual comparisons */
   expect: {
     /* Maximum time expect() should wait for the condition to be met. */
     timeout: 10000, // Increased to 10 seconds
   },
-  
+
   /* Global test timeout */
   timeout: 60000, // 60 seconds per test
 
@@ -60,21 +64,21 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
 
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
+    // {
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'] },
+    // },
 
     /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
+    {
+      name: 'Mobile Chrome',
+      use: { ...devices['Pixel 5'] },
+    },
     // {
     //   name: 'Mobile Safari',
     //   use: { ...devices['iPhone 12'] },

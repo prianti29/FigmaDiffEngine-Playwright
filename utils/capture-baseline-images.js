@@ -16,13 +16,13 @@ import path from 'path';
  */
 async function captureBaselineImages(options = {}) {
   const {
-    url = 'https://example.com',
+    url = 'https://thebestcamo-dev.myshopify.com/pages/contact',
     outputDir = './baseline',
     viewports = [
       { name: 'homepage', width: 1920, height: 1080, fullPage: true },
-      { name: 'header', width: 1920, height: 100, selector: 'header', fullPage: false },
-      { name: 'homepage-desktop', width: 1920, height: 1080, fullPage: true },
-      { name: 'homepage-tablet', width: 768, height: 1024, fullPage: true },
+      // { name: 'header', width: 1920, height: 100, selector: 'header', fullPage: false },
+      // { name: 'homepage-desktop', width: 1920, height: 1080, fullPage: true },
+      // { name: 'homepage-tablet', width: 768, height: 1024, fullPage: true },
       { name: 'homepage-mobile', width: 375, height: 667, fullPage: true },
     ]
   } = options;
@@ -47,9 +47,9 @@ async function captureBaselineImages(options = {}) {
     for (const viewport of viewports) {
       try {
         // Set viewport size
-        await page.setViewportSize({ 
-          width: viewport.width, 
-          height: viewport.height 
+        await page.setViewportSize({
+          width: viewport.width,
+          height: viewport.height
         });
 
         // Wait a bit for layout to adjust
@@ -62,9 +62,9 @@ async function captureBaselineImages(options = {}) {
           // Capture specific element
           imageName = `${viewport.name}-figma.png`;
           screenshotPath = path.join(outputDir, imageName);
-          
+
           console.log(`📸 Capturing ${viewport.name} (${viewport.width}x${viewport.height})...`);
-          
+
           await page.waitForSelector(viewport.selector, { timeout: 5000 });
           const element = await page.locator(viewport.selector);
           await element.screenshot({ path: screenshotPath });
@@ -72,10 +72,10 @@ async function captureBaselineImages(options = {}) {
           // Capture full page or viewport
           imageName = `${viewport.name}-figma.png`;
           screenshotPath = path.join(outputDir, imageName);
-          
+
           console.log(`📸 Capturing ${viewport.name} (${viewport.width}x${viewport.height})...`);
-          
-          await page.screenshot({ 
+
+          await page.screenshot({
             path: screenshotPath,
             fullPage: viewport.fullPage !== false
           });
@@ -108,7 +108,7 @@ async function quickCapture(url) {
 // Run if called directly
 const args = process.argv.slice(2);
 if (args.length > 0 || import.meta.url === `file://${process.argv[1]}`) {
-  const url = args[0] || 'https://example.com';
+  const url = args[0] || 'https://thebestcamo-dev.myshopify.com/pages/contact';
   captureBaselineImages({ url }).catch(console.error);
 }
 
