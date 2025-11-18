@@ -79,16 +79,16 @@ async function generatePlaceholderImages() {
 
           // Skip if file already exists
           if (fs.existsSync(filePath)) {
-               console.log(`⏭️  Skipped: ${img.name} (already exists)`);
+               console.log(` Skipped: ${img.name} (already exists)`);
                continue;
           }
 
           try {
                const png = createPlaceholderImage(img.width, img.height, img.color);
                await savePNG(png, filePath);
-               console.log(`✅ Created: ${img.name} (${img.width}x${img.height})`);
+               console.log(`Created: ${img.name} (${img.width}x${img.height})`);
           } catch (error) {
-               console.error(`❌ Error creating ${img.name}:`, error.message);
+               console.error(` Error creating ${img.name}:`, error.message);
           }
      }
 

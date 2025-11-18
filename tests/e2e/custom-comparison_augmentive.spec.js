@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { ImageComparison } from '../../utils/image-comparison.js';
 import { FigmaHelper } from '../../utils/figma-helper.js';
-import { AuthHelper } from '../../utils/auth-helper.js';
 import path from 'path';
 
 /**
@@ -10,7 +9,7 @@ import path from 'path';
  */
 
 // ⚙️ CONFIGURATION: Change this to your website URL
-const WEBSITE_URL = 'https://thebestcamo-dev.myshopify.com/pages/contact';
+const WEBSITE_URL = 'https://augmentive.health/login';
 
 test.describe('Custom Image Comparison', () => {
   let imageComparison;
@@ -33,18 +32,11 @@ test.describe('Custom Image Comparison', () => {
       test.skip('Figma baseline image not found. Please add my-design-figma.png to ./baseline folder');
     }
 
-    // Handle password-protected Shopify store
-    await AuthHelper.authenticateShopifyStore(
-      page,
-      'https://thebestcamo-dev.myshopify.com/password',
-      '1'
-    );
-
-    // Navigate to the target page and take screenshot
+    // Navigate and take screenshot
     await page.goto(WEBSITE_URL);
     await page.waitForLoadState('networkidle');
 
-    const webpageImagePath = './screenshots/contact.png';
+    const webpageImagePath = './screenshots/my-page-actual.png';
     await page.screenshot({
       path: webpageImagePath,
       fullPage: true
@@ -95,14 +87,6 @@ test.describe('Custom Image Comparison', () => {
       test.skip('Figma baseline image not found. Please add critical-component-figma.png to ./baseline folder');
     }
 
-    // Handle password-protected Shopify store
-    await AuthHelper.authenticateShopifyStore(
-      page,
-      'https://thebestcamo-dev.myshopify.com/password',
-      '1'
-    );
-
-    // Navigate to the target page
     await page.goto(WEBSITE_URL);
     await page.waitForSelector('.critical-component'); // Wait for specific component
 

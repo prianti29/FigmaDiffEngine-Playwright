@@ -47,7 +47,7 @@ export class ImageComparison {
    */
   resizeImage(img, width, height) {
     const resized = new PNG({ width, height });
-    
+
     // Simple nearest-neighbor resize
     const xRatio = img.width / width;
     const yRatio = img.height / height;
@@ -97,7 +97,7 @@ export class ImageComparison {
 
       // Create diff image
       const diff = new PNG({ width, height });
-      
+
       // Compare images using pixelmatch
       const numDiffPixels = pixelmatch(
         figmaResized.data,
@@ -202,6 +202,12 @@ export class ImageComparison {
    * @returns {Promise<void>}
    */
   async saveImage(img, outputPath) {
+    // Ensure the directory exists before saving
+    const dir = path.dirname(outputPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
     return new Promise((resolve, reject) => {
       const stream = fs.createWriteStream(outputPath);
       img.pack().pipe(stream)
