@@ -18,6 +18,7 @@ export default defineConfig({
   /* Exclude specific test files */
   testIgnore: ['**/visual-comparison_augmentive.spec.js', '**/custom-comparison_augmentive.spec.js'],
 
+
   /* Run tests in files in parallel */
 
   fullyParallel: true,
