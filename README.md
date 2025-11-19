@@ -246,6 +246,26 @@ Each comparison returns:
 - Ensure both images have similar dimensions
 - The tool automatically resizes, but matching dimensions work best
 
+## Resources & Links
+
+### Documentation
+
+- [Playwright Test Configuration](https://playwright.dev/docs/test-configuration)
+- [Playwright Test Reporters](https://playwright.dev/docs/test-reporters)
+- [Playwright Test Options API](https://playwright.dev/docs/api/class-testoptions)
+- [Playwright Trace Viewer](https://playwright.dev/docs/trace-viewer)
+- [dotenv - Environment Variables](https://github.com/motdotla/dotenv)
+
+### Test URLs Used in This Project
+
+- **The Best Camo (Shopify Store)**:
+
+  - Contact Page: `https://thebestcamo-dev.myshopify.com/pages/contact`
+  - Password Page: `https://thebestcamo-dev.myshopify.com/password`
+
+- **Augmentive Health**:
+  - Login Page: `https://augmentive.health/login`
+
 ## Contributing
 
 Feel free to extend this project with:
